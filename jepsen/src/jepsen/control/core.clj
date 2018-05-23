@@ -145,7 +145,7 @@
   :sudo and :sudo-password fields."
   [{:keys [sudo sudo-password]} cmd]
   (if sudo
-    (cond-> (assoc cmd :cmd (str "sudo -k -S -u " sudo " bash -c "
+    (cond-> (assoc cmd :cmd (str "sudo -k -S -u " sudo " bash -x -c "
                                  (escape (:cmd cmd))))
       ; If we have a password, provide it in the input so sudo sees it.
       sudo-password (assoc :in (str sudo-password "\n" (:in cmd))))
