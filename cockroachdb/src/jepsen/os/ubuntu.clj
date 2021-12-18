@@ -39,11 +39,9 @@
        ;; (no log messages I've been able to find). Sometimes it fails
        ;; several times in a row. Keep trying until the command succeeds.
        ;;
-       ;; TODO: This assumes ubuntu 16.04, which uses ntpd. Ubuntu
-       ;; 18.04 switches to chronyd instead so this will need to be
-       ;; updated.
+       ;; Works for Ubuntu 18.04, 20.04 as of now.
        (with-retry [tries 3]
-         (c/su (c/exec :service :ntp :stop))
+         (c/su (c/exec :service :chrony :stop))
          (catch RuntimeException e
            (if (pos? tries)
              (do (Thread/sleep (+ 1000 (rand-int 1000)))
