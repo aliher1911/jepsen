@@ -108,7 +108,11 @@
     "Excluding setup and teardown, how long should a test run for, in seconds?"
     :default  60
     :parse-fn #(Long/parseLong %)
-    :validate [pos? "Must be positive"]]])
+    :validate [pos? "Must be positive"]]
+
+   [nil "--ntp-server SERVER"
+    "NTP server to use on clients when restoring clock"
+    :default "ntp.ubuntu.com"]])
 
 (defn package-opt
   ([default]

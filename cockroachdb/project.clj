@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [jepsen "0.1.9-SNAPSHOT"]
+                 [jepsen "0.2.5"]
                  [org.clojure/java.jdbc "0.6.1"]
                  [org.postgresql/postgresql "9.4.1211"]]
   :jvm-opts ["-Xmx12g"
