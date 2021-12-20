@@ -33,20 +33,20 @@
                         :iputils-ping
                         :rsyslog
                         :tcpdump
-                        :logrotate])
+                        :logrotate]))
 
-       ;; This occasionally fails (roughly 1% of the time) for no apparent reason
-       ;; (no log messages I've been able to find). Sometimes it fails
-       ;; several times in a row. Keep trying until the command succeeds.
-       ;;
-       ;; Works for Ubuntu 18.04, 20.04 as of now.
-       (with-retry [tries 3]
-         (c/su (c/exec :service :chrony :stop))
-         (catch RuntimeException e
-           (if (pos? tries)
-             (do (Thread/sleep (+ 1000 (rand-int 1000)))
-                 (retry (dec tries)))
-             (throw e)))))
+      ;; This occasionally fails (roughly 1% of the time) for no apparent reason
+      ;; (no log messages I've been able to find). Sometimes it fails
+      ;; several times in a row. Keep trying until the command succeeds.
+      ;;
+      ;; Works for Ubuntu 18.04, 20.04 as of now.
+      (with-retry [tries 3]
+        (c/su (c/exec :service :chrony :stop))
+        (catch RuntimeException e
+          (if (pos? tries)
+            (do (Thread/sleep (+ 1000 (rand-int 1000)))
+                (retry (dec tries)))
+            (throw e))))
 
       (meh (net/heal! (:net test) test)))
 
