@@ -1,7 +1,8 @@
 (ns jepsen.cockroach.bank
   "Simulates transfers between bank accounts"
   (:refer-clojure :exclude [test])
-  (:require [jepsen [cockroach :as cockroach]
+  (:require [jepsen
+             [cockroach :as cockroach]
              [client :as client]
              [checker :as checker]
              [generator :as gen]
@@ -14,7 +15,6 @@
             [clojure.core.reducers :as r]
             [clojure.java.jdbc :as j]
             [clojure.tools.logging :refer :all]
-            [knossos.model :as model]
             [knossos.op :as op]))
 
 (defrecord BankClient [tbl-created? n starting-balance conn]
@@ -113,22 +113,24 @@
   "Balances must all be non-negative and sum to the model's total."
   []
   (reify checker/Checker
-    (check [this test model history opts]
-      (let [bad-reads (->> history
+    (check [this test history opts]
+      (let [total (:total test)
+            n (:n test)
+            bad-reads (->> history
                            (r/filter op/ok?)
                            (r/filter #(= :read (:f %)))
                            (r/map (fn [op]
                                     (let [balances (:value op)]
-                                      (cond (not= (:n model) (count balances))
+                                      (cond (not= n (count balances))
                                             {:type :wrong-n
-                                             :expected (:n model)
+                                             :expected n
                                              :found    (count balances)
                                              :op       op}
 
-                                            (not= (:total model)
+                                            (not= total
                                                   (reduce + balances))
                                             {:type :wrong-total
-                                             :expected (:total model)
+                                             :expected total
                                              :found    (reduce + balances)
                                              :op       op}
 
@@ -161,7 +163,8 @@
   [opts]
   (bank-test-base
    (merge {:name   "bank"
-           :model  {:n 5 :total 50}
+           :n 5
+           :total 50
            :client (BankClient. (atom false) 5 10 nil)}
           opts)))
 
@@ -244,6 +247,7 @@
   [opts]
   (bank-test-base
    (merge {:name   "bank-multitable"
-           :model  {:n 5 :total 50}
+           :n 5
+           :total 50
            :client (MultiBankClient. (atom false) 5 10 nil)}
           opts)))
