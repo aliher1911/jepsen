@@ -28,7 +28,6 @@
             [clojure.core.reducers :as r]
             [clojure.set :as set]
             [clojure.tools.logging :refer :all]
-            [knossos.model :as model]
             [knossos.op :as op]))
 
 (def table-prefix "String prepended to all table names." "seq_")
@@ -98,7 +97,7 @@
     (c/with-conn [c client]
       (c/with-timeout
         (doseq [t (table-names table-count)]
-          (j/execute! c [(str "drop table " t)])))))
+          (j/execute! c [(str "drop table if exists " t)])))))
 
   (close! [this test]
     (rc/close! client)))
@@ -140,7 +139,7 @@
 (defn checker
   []
   (reify checker/Checker
-    (check [this test model history opts]
+    (check [this test history opts]
       (assert (integer? (:key-count test)))
       (let [reads (->> history
                        (r/filter op/ok?)

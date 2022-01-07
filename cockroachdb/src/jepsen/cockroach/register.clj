@@ -93,11 +93,11 @@
                                       (gen/delay-til 1/2)
                                       (gen/stagger 0.1)
                                       (gen/limit 100))))}
-       :model       (model/cas-register 0)
        :checker     (checker/compose
                       {:perf   (checker/perf)
                        :details (independent/checker
                                   (checker/compose
                                     {:timeline     (timeline/html)
-                                     :linearizable (checker/linearizable)}))})}
+                                     :linearizable (checker/linearizable
+                                                    {:model (model/cas-register 0)})}))})}
       opts)))

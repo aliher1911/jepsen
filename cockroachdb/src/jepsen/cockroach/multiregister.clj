@@ -117,11 +117,11 @@
                               (->> (gen/mix [r w])
                                    (gen/stagger 0.1)
                                    (gen/limit 30))))}
-     :model       (model/multi-register {})
      :checker     (checker/compose
                    {:perf   (checker/perf)
                     :details (independent/checker
                               (checker/compose
                                {:timeline     (timeline/html)
-                                :linearizable (checker/linearizable)}))})}
+                                :linearizable (checker/linearizable
+                                               {:model (model/multi-register {})})}))})}
     opts)))
