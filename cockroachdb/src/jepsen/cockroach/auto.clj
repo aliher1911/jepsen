@@ -223,7 +223,7 @@
   (info node "Cockroach killed.")
   :killed)
 
-(def ntpserver "ntp.ubuntu.com")
+(def ntpserver "pool.ntp.org")
 
 (defn reset-clock!
   "Reset clock on this host. Logs output."
