@@ -7,6 +7,7 @@
             [jepsen [core :as jepsen]
                     [control :as c :refer [|]]]
             [jepsen.nemesis.time :as nt]
+            [jepsen.cockroach.time :as ct]
             [jepsen.control.util :as cu]
             [jepsen.os.debian :as debian])
   (:import (java.io File)))
@@ -114,26 +115,6 @@
     (str/join ", "
       (map (fn [[k v]] (str (name k) " = " v)) config)))))
 
-(defn install-bumptime!
-  "Install time adjusting binary"
-  []
-  (c/su
-    (debian/install [:build-essential])
-    ; Write out resource to file
-    (let [tmp-file (File/createTempFile "jepsen-bumptime" ".c")]
-      (try
-        (with-open [r (io/reader (io/resource "bumptime.c"))]
-          (io/copy r tmp-file))
-        ; Upload
-        (c/exec :mkdir :-p "/opt/jepsen")
-        (c/exec :chmod "a+rwx" "/opt/jepsen")
-        (c/upload (.getCanonicalPath tmp-file) "/opt/jepsen/bumptime.c")
-        (c/cd "/opt/jepsen"
-              (c/exec :gcc "bumptime.c")
-              (c/exec :mv "a.out" "bumptime"))
-        (finally
-          (.delete tmp-file))))))
-
 (defn install!
   "Installs CockroachDB on the given node. Test should include a :tarball url
   the tarball."
@@ -144,8 +125,8 @@
    (cu/install-archive! (:tarball test) working-path false)
    (c/exec :mkdir :-p working-path)
    (c/exec :mkdir :-p log-path)
-   (c/exec :chown :-R (str cockroach-user ":" cockroach-user) working-path))
-  (install-bumptime!)
+   (c/exec :chown :-R (str cockroach-user ":" cockroach-user) working-path)
+   (ct/install!))
   (nt/install!)
   (info node "Cockroach installed"))
 
@@ -222,15 +203,3 @@
   (util/meh (c/su (c/exec :killall :-9 :cockroach)))
   (info node "Cockroach killed.")
   :killed)
-
-(def ntpserver "pool.ntp.org")
-
-(defn reset-clock!
-  "Reset clock on this host. Logs output."
-  []
-  (info c/*host* "clock reset:" (c/su (c/exec :ntpdate :-b ntpserver))))
-
-(defn reset-clocks!
-  "Reset all clocks on all nodes in a test"
-  [test]
-  (c/with-test-nodes test (reset-clock!)))
