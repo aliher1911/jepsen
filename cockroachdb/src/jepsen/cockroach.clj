@@ -23,6 +23,7 @@
             [jepsen.control.net :as cn]
             [jepsen.os.ubuntu :as ubuntu]
             [jepsen.cockroach [nemesis :as cln]
+                              [time :as ct]
                               [auto :as auto :refer [cockroach-user
                                                      cockroach
                                                      jdbc-mode
@@ -54,7 +55,7 @@
 
       (when (= jdbc-mode :cdb-cluster)
         (auto/install! test node)
-        (auto/reset-clock!)
+        (ct/reset-clock!)
         (jepsen/synchronize test)
 
         (c/sudo cockroach-user
@@ -102,7 +103,7 @@
 
     (teardown! [_ test node]
       (when (= jdbc-mode :cdb-cluster)
-        (auto/reset-clock!)
+        (ct/reset-clock!)
 
         (c/su
           (auto/kill! test node)

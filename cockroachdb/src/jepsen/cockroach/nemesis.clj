@@ -10,6 +10,7 @@
             [jepsen.nemesis.time :as nt]
             [jepsen.cockroach.client :as cc]
             [jepsen.cockroach.auto :as auto]
+            [jepsen.cockroach.time :as ct]
             [clojure.set :as set]
             [clojure.java.jdbc :as j]
             [clojure.string :as str]
@@ -206,18 +207,18 @@
   (restarting
    (reify nemesis/Nemesis
      (setup! [this test]
-       (auto/reset-clocks! test)
+       (ct/reset-clocks! test)
        this)
 
      (invoke! [this test op]
        (assoc op :value
               (case (:f op)
                 :start (c/with-test-nodes test
-                         (nt/strobe-time! delta period duration))
+                         (ct/strobe-time! delta period duration))
                 :stop nil)))
 
      (teardown! [this test]
-       (auto/reset-clocks! test)))))
+       (ct/reset-clocks! test)))))
 
 (defn strobe-skews
   []
@@ -236,7 +237,7 @@
   (restarting
    (reify nemesis/Nemesis
      (setup! [this test]
-       (auto/reset-clocks! test)
+       (ct/reset-clocks! test)
        this)
 
      (invoke! [this test op]
@@ -244,15 +245,14 @@
               (case (:f op)
                 :start (c/with-test-nodes test
                          (if (< (rand) 0.5)
-                           (do (c/su (c/exec "/opt/jepsen/bumptime"
-                                             (* 1000 dt)))
+                           (do (ct/bump-time! (* 1000 dt))
                                dt)
                            0))
                 :stop (c/with-test-nodes test
-                        (auto/reset-clock!)))))
+                        (ct/reset-clock!)))))
 
      (teardown! [this test]
-       (auto/reset-clocks! test)))))
+       (ct/reset-clocks! test)))))
 
 (defn skew
   "A skew nemesis"
