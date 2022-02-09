@@ -41,7 +41,7 @@
       ;;
       ;; Works for Ubuntu 18.04, 20.04 as of now.
       (with-retry [tries 3]
-        (c/su (c/exec :service :chrony :stop))
+        (c/su (c/exec :service :systemd-timesyncd :stop))
         (catch RuntimeException e
           (if (pos? tries)
             (do (Thread/sleep (+ 1000 (rand-int 1000)))

@@ -30,10 +30,10 @@
 
 ;; Ports
 (def db-port 26257)
-(def http-port 26258)
+(def http-port 8080)
 
 ;; Paths
-(def working-path "Home directory for cockroach setup" "/opt/cockroach")
+(def working-path "Home directory for cockroach setup" "/var/lib/cockroach/store")
 (def cockroach "Cockroach binary" (str working-path "/cockroach"))
 (def store-path "Cockroach data dir" (str working-path "/cockroach-data"))
 (def pidfile "Cockroach PID file" (str working-path "/pid"))
@@ -168,7 +168,7 @@
     (wrap-env [(str "COCKROACH_LINEARIZABLE="
                     (if (:linearizable test) "true" "false"))
                (str "COCKROACH_MAX_OFFSET=" "250ms")]
-              (cockroach-start-cmdline join))))
+              (cockroach-start-cmdline join (str "--advertise-addr=" node)))))
 
 (defn start!
   "Start cockroachdb on node."

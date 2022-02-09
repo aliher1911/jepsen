@@ -6,13 +6,12 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [jepsen "0.1.19"]
                  [org.clojure/java.jdbc "0.7.12"]
-                 [org.postgresql/postgresql "42.1.3"]]
+                 [org.postgresql/postgresql "42.1.3"]
+                 [javax.xml.bind/jaxb-api "2.3.1"]
+                 [org.glassfish.jaxb/jaxb-runtime "2.3.1"]]
   :jvm-opts ["-Xmx12g"
-             "-XX:+UseConcMarkSweepGC"
-             "-XX:+UseParNewGC"
              "-XX:+CMSParallelRemarkEnabled"
              "-XX:+AggressiveOpts"
-             "-XX:+UseFastAccessorMethods"
              "-XX:MaxInlineLevel=32"
              "-XX:MaxRecursiveInlineLevel=2"
              "-server"]

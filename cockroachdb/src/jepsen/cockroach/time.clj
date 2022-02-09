@@ -24,7 +24,7 @@
   [delta period duration]
   (c/su (c/exec "/opt/jepsen/strobetime" delta period duration)))
 
-(def ntpserver "pool.ntp.org")
+(def ntpserver "time.google.com")
 
 (defn reset-clock!
   "Reset clock on this host. Logs output."
