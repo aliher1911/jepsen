@@ -14,7 +14,6 @@
             [clojure.core.reducers :as r]
             [clojure.set :as set]
             [clojure.tools.logging :refer :all]
-            [knossos.model :as model]
             [knossos.op :as op]))
 
 (defn check-sets
@@ -24,7 +23,7 @@
   elements are unique."
   []
   (reify checker/Checker
-    (check [this test model history opts]
+    (check [this test history opts]
       (let [attempts (->> history
                           (r/filter op/invoke?)
                           (r/filter #(= :add (:f %)))
@@ -125,7 +124,7 @@
   (teardown! [this test]
     (c/with-timeout
       (c/with-conn [c conn]
-        (j/execute! c ["drop table set"]))))
+        (j/execute! c ["drop table if exists set"]))))
 
   (close! [this test]
     (rc/close! conn)))
